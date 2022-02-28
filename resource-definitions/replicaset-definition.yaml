@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: myapp-replicaset
+  labels:
+    app: myapp
+    type: replica
+
+spec:
+  replicas: 3 # Desired number of replicas
+  selector: # Selector to determine if Pod is a part of this ReplicaSet
+    matchLabels:
+      type: front-end
+  template: # Pod to create, if needed
+    metadata:
+      name: myapp-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+    

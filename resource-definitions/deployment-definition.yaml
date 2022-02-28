@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: myapp
+    type: deployment
+
+spec:
+  replicas: 3 # Desired number of replicas
+  selector: # Selector to determine if Pod is a part of this ReplicaSet
+    matchLabels:
+      type: front-end
+  template: # Pod to create, if needed
+    metadata:
+      name: nginx-pod
+      labels:
+        app: myapp
+        type: front-end
+    spec:
+      containers:
+        - name: nginx-container
+          image: nginx
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "500m"
+    

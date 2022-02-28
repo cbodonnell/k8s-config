@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: myapp-pod
+  labels:
+    app: myapp
+    type: front-end
+spec:
+  securityContext: # Security context of the Pod (and all containers)
+    runAsUser: 1001
+  containers:
+    - name: nginx-container
+      image: nginx
+      securityContext: # Security context of the container (overrides Pod context)
+        runAsUser: 1002
+        capabilities: # Seems this is only available at the container level?
+          add: ["MAC_ADMIN"]
+      resources:
+        limits:
+          memory: "128Mi"
+          cpu: "500m"
+      readinessProbe: # Response from this will determine if pod is Ready for Service traffic
+        httpGet:
+          path: /api/ready
+          port: 8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 8
+      livenessProbe:
+        httpGet:
+          path: /api/healthy
+          port:  8080
+        initialDelaySeconds: 10
+        periodSeconds: 5
+        failureThreshold: 8
+  serviceAccountName: test-service-account
+  resources:
+    requests:
+      memory: "1Gi"
+      cpu: 1
+    limits:
+      memory: "2Gi"
+      cpu: 2
+  tolerations: # tolerate nodes tained with app=blue:NoSchedule
+  - key: "app"
+    operator: "Equal"
+    value: "blue"
+    effect: "NoSchedule"
+  nodeSelector:
+    size: Large # Matched Node label $(kubectl label nodes <name> <key>=<value>)
+  affinity: # Allows more complex expressions
+    nodeAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        nodeSelectorTerms:
+        - matchExpressions:
+          - key: size
+            operator: NotIn # In | NotIn | Exists | ... (see docs for more)
+            values:
+            - Small
