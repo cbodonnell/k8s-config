@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: math-cron-job
+spec:
+  schedule: "*/1 * * * *" # minute(0-59) hour(0-23) day-of-month(1-31) month(1-12) day-of-week(0-6) 
+  jobTemplate:
+    spec:
+      ttlSecondsAfterFinished: 100
+      completions: 3
+      parallelism: 3
+      template:
+        spec:
+          containers:
+            - name: math-pod
+              image: ubuntu
+              command: ["expr", "3" , "+", "2"]
+          restartPolicy: Never

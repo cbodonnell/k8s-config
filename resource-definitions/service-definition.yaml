@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: myapp
+spec:
+  type: NodePort # ClusterIP by default
+  selector:
+    app: myapp
+  ports:
+  - port: 8080 # Port on the Service
+    targetPort: 80 # Port on the Pod
+    nodePort: 30080 # Port on the Node

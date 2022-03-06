@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: nginx-container
-          image: nginx
+          image: nginx:1.21
           resources:
             limits:
               memory: "128Mi"
